@@ -43,11 +43,12 @@ The visualizer will show which player is controlled by your code. For a local ga
 is set to 0. (ignore it in local games)
 """
 
-from grid import Grid
-import game2dboard
 import copy
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import game2dboard
+from grid import Grid
 
 if len(sys.argv) > 1:
     inFile = sys.argv[1]
@@ -64,7 +65,8 @@ bd.cell_size = 50
 
 # Read from save
 import pickle
-pid, record_compressed = pickle.load(open(Path(__file__).parent / inFile, "rb" ))
+
+pid, record_compressed = pickle.load(open(Path(__file__).parent / inFile, "rb"))
 turns = len(record_compressed)
 
 # Run the game
@@ -75,7 +77,7 @@ boards = []
 totals = []
 bombs = []
 avgs = []
-avg = [0]*5
+avg = [0] * 5
 for step in range(turns):
     recorded_moves, recorded_bombs = record_compressed[step]
     grid.simulate_step(recorded_moves)
@@ -83,26 +85,27 @@ for step in range(turns):
     scores.append(copy.deepcopy(grid.score()))
     boards.append(copy.deepcopy(grid.grid))
     totals.append(copy.deepcopy(grid.grid_sum))
-    
+
     bombs.append(recorded_bombs)
 
     for i in range(PLAYERS):
-        avg[i] = (avg[i]*step + scores[step][i])/(step + 1)
+        avg[i] = (avg[i] * step + scores[step][i]) / (step + 1)
     avgs.append(copy.deepcopy(avg))
 
     grid.simulate_bombs(recorded_bombs)
+
 
 # Move
 def on_key_press(keysym):
     global turn
     global player
-    if keysym == 'Right':
+    if keysym == "Right":
         turn = min(turns - 1, turn + 1)
-    if keysym == 'Left':
+    if keysym == "Left":
         turn = max(0, turn - 1)
-    if keysym == 'Down':
+    if keysym == "Down":
         player = min(PLAYERS - 1, player + 1)
-    if keysym == 'Up':
+    if keysym == "Up":
         player = max(0, player - 1)
     board = boards[turn]
     total = totals[turn]
@@ -121,24 +124,53 @@ def on_key_press(keysym):
                 bd[i][j] = f"{bd[i][j]}#"
 
     # settlements that were made by the current player in this turn
-    for pos in record_compressed[turn][0][player]: 
-        bd[pos[0]][pos[1]] = f"{bd[pos[0]][pos[1]]}+"              
-    
+    for pos in record_compressed[turn][0][player]:
+        bd[pos[0]][pos[1]] = f"{bd[pos[0]][pos[1]]}+"
+
     for b in bombs[turn]:
         for pos in grid._bomb_coords(b[0], b[1]):
             bd[pos[0]][pos[1]] += "B"
-    scorestrcolor = f"Round {turn+1}\nShowing player {player}" + ("(your program)" if player == pid else "") + "\n" + "".join([("\033[91m" if i == pid else "") + f"                Player {i}: {score[i]}; Avg: {round(avg[i],1)}"+("<" if i == player else "") +("\033[0m" if i == pid else "") + "\n" for i in range(PLAYERS)])
+    scorestrcolor = (
+        f"Round {turn+1}\nShowing player {player}"
+        + ("(your program)" if player == pid else "")
+        + "\n"
+        + "".join(
+            [
+                ("\033[91m" if i == pid else "")
+                + f"                Player {i}: {score[i]}; Avg: {round(avg[i],1)}"
+                + ("<" if i == player else "")
+                + ("\033[0m" if i == pid else "")
+                + "\n"
+                for i in range(PLAYERS)
+            ]
+        )
+    )
 
-    scorestr = f"Round {turn+1}\nShowing player {player}" + ("(your program)" if player == pid else "") + "\n" +  "".join([("\u0332" if i == pid else "").join(f"               Player {i}: {score[i]}; Avg: {round(avg[i],1)}"+("<" if i == player else "") + "\n") for i in range(PLAYERS)])
+    scorestr = (
+        f"Round {turn+1}\nShowing player {player}"
+        + ("(your program)" if player == pid else "")
+        + "\n"
+        + "".join(
+            [
+                ("\u0332" if i == pid else "").join(
+                    f"               Player {i}: {score[i]}; Avg: {round(avg[i],1)}"
+                    + ("<" if i == player else "")
+                    + "\n"
+                )
+                for i in range(PLAYERS)
+            ]
+        )
+    )
     print(scorestrcolor)
     bd.print(scorestr)
-    
+
+
 # Visualize
 turn = 0
 player = pid
 print(f"You are player {pid}")
-bd.create_output(font_size = 15)
+bd.create_output(font_size=15)
 bd.on_key_press = on_key_press
 
-on_key_press('')
+on_key_press("")
 bd.show()

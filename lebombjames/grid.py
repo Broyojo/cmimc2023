@@ -1,13 +1,15 @@
-import random
 import copy
 import pickle
-from pathlib import Path
+import random
 from json import dumps
+from pathlib import Path
+
 
 class Grid:
     """
     Grid class used to simulate the game
     """
+
     SIZE = 10
     SETTLEMENTS = 3
     PLAYERS = 5
@@ -17,7 +19,9 @@ class Grid:
     SCORED_TURNS = 100
 
     def __init__(self) -> None:
-        self.grid = [[[0] * self.PLAYERS for _ in range(self.SIZE)] for _ in range(self.SIZE)]
+        self.grid = [
+            [[0] * self.PLAYERS for _ in range(self.SIZE)] for _ in range(self.SIZE)
+        ]
         self.grid_sum = [[0] * self.SIZE for _ in range(self.SIZE)]
         self.history = []
         self.scores = []
@@ -52,7 +56,7 @@ class Grid:
 
         self.turn += 1
         self.history.append((copy.deepcopy(moves), placed_bombs))
-    
+
     def simulate_step(self, moves):
         """
         Simulate the game for one step, to use in the visualizer when loading a game history
@@ -70,7 +74,7 @@ class Grid:
                 self.grid_sum[x][y] += 1
 
         self.turn += 1
-    
+
     def simulate_bombs(self, bombs):
         """
         bombs: list of (x,y) tuples
@@ -83,12 +87,14 @@ class Grid:
         Get the current state of the game
         """
         return self.grid
-    
+
     def dump(self):
         """
         Dump the game history into the file history.game, using 0 as the default player
         """
-        pickle.dump((0, self.history), open(Path(__file__).parent / "history.game", "wb"))
+        pickle.dump(
+            (0, self.history), open(Path(__file__).parent / "history.game", "wb")
+        )
 
     def score(self):
         """
@@ -134,9 +140,11 @@ class Grid:
                 for x, y in bomb_coords:
                     settlements_destroyed += self.grid_sum[x][y]
                 bombs[(i, j)] = settlements_destroyed
-        
+
         mx_settlements = max(bombs.values())
-        best_bombs = [bomb for bomb, settlements in bombs.items() if settlements == mx_settlements]
+        best_bombs = [
+            bomb for bomb, settlements in bombs.items() if settlements == mx_settlements
+        ]
         return random.choice(best_bombs)
 
     def _bomb_coords(self, x, y):
@@ -145,11 +153,11 @@ class Grid:
         """
         bomb_coords = [(x, y)]
         if x > 0:
-            bomb_coords.append((x-1, y))
-        if x < self.SIZE-1:
-            bomb_coords.append((x+1, y))
+            bomb_coords.append((x - 1, y))
+        if x < self.SIZE - 1:
+            bomb_coords.append((x + 1, y))
         if y > 0:
-            bomb_coords.append((x, y-1))
-        if y < self.SIZE-1:
-            bomb_coords.append((x, y+1))
+            bomb_coords.append((x, y - 1))
+        if y < self.SIZE - 1:
+            bomb_coords.append((x, y + 1))
         return bomb_coords

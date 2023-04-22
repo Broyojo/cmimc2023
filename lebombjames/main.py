@@ -6,6 +6,7 @@ Usage:
 """
 
 import argparse
+
 from grader import LebombJamesGrader
 
 parser = argparse.ArgumentParser(description="LebombJames local runner CLI")

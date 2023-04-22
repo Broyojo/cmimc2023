@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "cmimc2023"
+version = "0.1.0"
+description = ""
+authors = ["Broyojo <dha@xoba.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+game2dboard = "^0.9.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -6,6 +6,7 @@ import random
 
 # Implement me!
 def strategy(pid, board):
+    print(board)
     return [(0, 0), (0, 0), (0, 0)]
 
 

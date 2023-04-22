@@ -1,13 +1,76 @@
 """
 Edit this file! This is the file you will submit.
 """
+import math
 import random
+from pprint import pprint
 
 
 # Implement me!
 def strategy(pid, board):
-    print(board)
-    return [(0, 0), (0, 0), (0, 0)]
+    moves = []
+
+    for move_number in range(3):
+        settlement_counts = [[0 for _ in range(10)] for _ in range(10)]
+
+        for x in range(10):
+            for y in range(10):
+                total_settlements = sum(board[x][y])
+                settlement_counts[x][y] = total_settlements
+
+        for move in moves:
+            settlement_counts[move[0]][move[1]] += 1
+
+        # print("current move number:", move_number)
+
+        danger_scores = danger_iteration(settlement_counts)
+        danger_scores = danger_iteration(danger_scores)
+
+        # print("settlement_counts:")
+        # pprint(settlement_counts)
+
+        # print("danger_scores:")
+        # pprint(danger_scores)
+
+        locations = []
+
+        for x, row in enumerate(danger_scores):
+            for y, score in enumerate(row):
+                locations.append(((x, y), score))
+
+        move = min(locations, key=lambda x: x[1])
+
+        # print(f"move number {move_number} has been decided: {move}")
+
+        moves.append(move[0])
+
+    # print("---------------------------------")
+
+    return moves
+
+
+def danger_iteration(counts):
+    danger_scores = [[0 for _ in range(10)] for _ in range(10)]
+    for x in range(10):
+        for y in range(10):
+            danger_score = counts[x][y]
+            for nx, ny in get_neighbors(x, y):
+                danger_score += counts[nx][ny]
+            danger_scores[x][y] = danger_score
+    return danger_scores
+
+
+def get_neighbors(x, y):
+    neighbors = []
+    if x > 0:
+        neighbors.append((x - 1, y))
+    if x < 9:
+        neighbors.append((x + 1, y))
+    if y > 0:
+        neighbors.append((x, y - 1))
+    if y < 9:
+        neighbors.append((x, y + 1))
+    return neighbors
 
 
 # A random strategy to use in your game.

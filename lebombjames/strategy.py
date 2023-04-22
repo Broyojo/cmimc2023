@@ -1,14 +1,29 @@
-"""
-Edit this file! This is the file you will submit.
-"""
-import math
 import random
 from pprint import pprint
 
+previous_board = [[[0 for _ in range(5)] for _ in range(10)] for _ in range(10)]
+bombs = [[0 for _ in range(10)] for _ in range(10)]
 
-# Implement me!
+
+def update_bombs(board):
+    global previous_board
+    global bombs
+
+    for x in range(10):
+        for y in range(10):
+            if sum(board[x][y]) < sum(previous_board[x][y]):
+                bombs[x][y] += 1
+
+    print("bombs:")
+    pprint(bombs)
+
+    previous_board = board
+
+
 def strategy(pid, board):
     moves = []
+
+    update_bombs(board)
 
     for move_number in range(3):
         settlement_counts = [[0 for _ in range(10)] for _ in range(10)]
@@ -38,6 +53,8 @@ def strategy(pid, board):
             for y, score in enumerate(row):
                 locations.append(((x, y), score))
 
+        random.shuffle(locations)
+
         move = min(locations, key=lambda x: x[1])
 
         # print(f"move number {move_number} has been decided: {move}")
@@ -45,6 +62,8 @@ def strategy(pid, board):
         moves.append(move[0])
 
     # print("---------------------------------")
+
+    previous_board = board
 
     return moves
 
@@ -73,8 +92,8 @@ def get_neighbors(x, y):
     return neighbors
 
 
-# A random strategy to use in your game.
 def random_strategy(pid, board):
+    update_bombs(board)
     return [
         (random.randint(0, 9), random.randint(0, 9)),
         (random.randint(0, 9), random.randint(0, 9)),
@@ -93,7 +112,7 @@ def get_strategies():
     In the official grader, only the first element of the list will be used as your strategy.
     """
     strategies = [
-        strategy,
+        random_strategy,
         random_strategy,
         random_strategy,
         random_strategy,

@@ -15,7 +15,7 @@ class Grid:
     PLAYERS = 5
     BOMBS = 2
 
-    MAX_TURNS = 1000
+    MAX_TURNS = 1000000
     SCORED_TURNS = 100
 
     def __init__(self) -> None:

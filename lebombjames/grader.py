@@ -6,7 +6,7 @@ from strategy import get_strategies
 
 
 class LebombJamesGrader:
-    TURNS = 1000
+    TURNS = 1000000
 
     def __init__(self, debug=False, save=False) -> None:
         self.debug = debug
